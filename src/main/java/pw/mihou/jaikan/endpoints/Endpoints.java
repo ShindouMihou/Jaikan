@@ -21,8 +21,8 @@ public class Endpoints {
      * %d - numerical value.
      * More information can be found on https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Formatter.html#syntax.
      *
-     * @param generic
-     * @return
+     * @param generic The generic endpoint that will be used.
+     * @return A new Endpoint object.
      */
     public static Endpoint createEndpoint(String generic) {
         return new Endpoint(generic);

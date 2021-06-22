@@ -38,7 +38,7 @@ public class Jaikan {
      * parsing it into the object that it will be casted to.
      *
      * <h3>This is primarily used for searching as the data format is for searches (or anything
-     * that has multiple objects).
+     * that has multiple objects).</h3>
      *
      * @param endpoint The endpoint to format, you can select default ones from
      *                 {@link pw.mihou.jaikan.endpoints.Endpoints} such as
@@ -59,7 +59,7 @@ public class Jaikan {
      * parsing it into the object that it will be casted to.
      *
      * <h3>This is used for object searches (basically where the JSON result is an entire
-     * object itself and not a list of them).
+     * object itself and not a list of them).</h3>
      *
      * @param endpoint The endpoint to format, you can select default ones from
      *                 {@link pw.mihou.jaikan.endpoints.Endpoints} such as
@@ -83,14 +83,14 @@ public class Jaikan {
      * parsing it into the object that it will be casted to.
      *
      * <h3>This is used for generic requests, you can use this to grab results from the
-     * API and parse it on your own way.
+     * API and parse it on your own way.</h3>
      *
      * @param endpoint The endpoint to format, you can select default ones from
      *                 {@link pw.mihou.jaikan.endpoints.Endpoints} such as
      *                 {@link pw.mihou.jaikan.endpoints.Endpoints#SEARCH}
      *                 which is used to search for either a manga or something else.
      * @param values The values to append onto the endpoint (for example, we have a query foramt of
-     * @return
+     * @return Returns the result from the endpoint.
      */
     public static CompletableFuture<String> genericRequest(Endpoint endpoint, Object... values) {
         return CompletableFuture.supplyAsync(() -> requestCache.get(endpoint.format(values), s -> {
