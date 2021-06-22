@@ -5,9 +5,13 @@ also only has a few models built-in (mainly Anime and Manga) as well as the endp
 models.
 
 ## ✨ Why are you aiming for a generic system?
-The modular system is to reduce the size of the library and also your application as much as possible. The reason why this reduces
+The generic system is to reduce the size of the library and also your application as much as possible. The reason why this reduces
 size of your application is because you can select what kind of data you want to add, you can have models that only has the name
 and synopsis of the anime or something else entirely.
+
+This also helps when a feature of Jikan is suddenly breaks on the library and you need a fix immediately, you could create your own
+endpoint and model that has all the fixes needed ~~and most importantly, it won't require much if any updates, laziness is a sin we all love~~ which
+also means, you don't have to keep checking the library for updates and you could immediately implement new features yourself! >W< (Yes, lazy developer).
 
 ## 📦 Are all results cached?
 Yes, all results are cached with the help of [Caffeine](https://github.com/ben-manes/caffeine) which is one of the best
