@@ -56,7 +56,19 @@ Here is the list of pre-defined models.
 * AnimeResult.class - This model is used for `.search(...)` method which returns a mini version of `Anime` that is returned by Jikan.
 * AnimeResult.class - This model is used for `.search(...)` method which returns a mini version of `Manga` that is returned by Jikan.
 
-## ❔ How to write my own model?
+## 🕹️ How do I create my own endpoint?
+You can easily create an endpoint by using the following:
+```java
+Endpoint custom = Endpoints.create("https://api.jikan.moe/...");
+```
+Every endpoint is formatted with `String.format(...)` which is why you have to follow the formatter placeholders on https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html which is basically:
+- `%s` for Strings.
+- `%d` for Integers.
+- `%b` for booleans.
+
+An example of a generic endpoint is: `https://api.jikan.moe/v3/%s/%d/` which is the endpoint for `Endpoints.OBJECT`. Basically, you can format it to become: `https://api.jikan.moe/v3/anime/1/` which is an actual working route on Jikan.
+
+## 🍱 How to write my own model?
 You can easily write your own model with the help of `SerializedName` which comes from GSON. A model is basically a class
 which GSON will serialize the data into. For example, we have this data from Jikan:
 ```json
