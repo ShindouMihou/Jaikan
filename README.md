@@ -18,6 +18,22 @@ By default, all items are cached up to 6 hours before they are evicted from the 
 For installation details, please check out [Jitpack](https://jitpack.io/#pw.mihou/Jaikan) until we are able to 
 receive our own Central Maven repository.
 
+To install via Maven:
+```xml
+<dependency>
+  <groupId>pw.mihou</groupId>
+  <artifactId>Jaikan</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
+
+To install via Gradle:
+```gradle
+implementation 'pw.mihou:Jaikan:1.0.0'
+```
+
+Other Build Tools, please check out the Maven Repository at [Central Maven](https://search.maven.org/artifact/pw.mihou/Jaikan/)
+
 ## 🖨️ How do you make a request?
 A simple anime search and transformation looks like this:
 ```java
