@@ -4,7 +4,7 @@ written to be as generic as possible to allow instant support for any other endp
 also only has a few models built-in (mainly Anime and Manga) as well as the endpoints to help guide you to making your own
 models.
 
-## ✨ Why are you aiming for a modular system?
+## ✨ Why are you aiming for a generic system?
 The modular system is to reduce the size of the library and also your application as much as possible. The reason why this reduces
 size of your application is because you can select what kind of data you want to add, you can have models that only has the name
 and synopsis of the anime or something else entirely.
