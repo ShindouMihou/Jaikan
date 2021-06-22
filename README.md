@@ -1,24 +1,24 @@
-# Jaikan
+# ❤️ Jaikan
 Jaikan is a simple generic Jikan wrapper written in Java with the aim of being **lightweight** and **simple** to use with the code
 written to be as generic as possible to allow instant support for any other endpoints of Jikan that will be added. The code
 also only has a few models built-in (mainly Anime and Manga) as well as the endpoints to help guide you to making your own
 models.
 
-## Why are you aiming for a modular system?
+## ✨ Why are you aiming for a modular system?
 The modular system is to reduce the size of the library and also your application as much as possible. The reason why this reduces
 size of your application is because you can select what kind of data you want to add, you can have models that only has the name
 and synopsis of the anime or something else entirely.
 
-## Are all results cached?
+## 📦 Are all results cached?
 Yes, all results are cached with the help of [Caffeine](https://github.com/ben-manes/caffeine) which is one of the best
 caching libraries I have used. This both helps reduce the requests you make towards Jikan but also speeds up all your repeated requests.
 By default, all items are cached up to 6 hours before they are evicted from the cache.
 
-## How to install?
+## 💻 How to install?
 For installation details, please check out [Jitpack](https://jitpack.io/#pw.mihou/Jaikan) until we are able to 
 receive our own Central Maven repository.
 
-## How do you make a request?
+## 🖨️ How do you make a request?
 A simple anime search and transformation looks like this:
 ```java
         Jaikan.search(Endpoints.SEARCH, AnimeResult.class, "anime", "Yuru Yuri").thenAccept(animeResults -> {
@@ -40,7 +40,7 @@ Jaikan.as(Endpoints.OBJECT, Anime.class, "anime", 40842).thenAccept(anime -> {
 
 This will output: `Idoly Pride`.
 
-## Are there any pre-defined endpoints and models?
+## ❔ Are there any pre-defined endpoints and models?
 Yes, there are pre-defined models and endpoints which are specifically the ones I made intiailly for my Discord bot. The list
 of them are as written below.
 
@@ -56,7 +56,7 @@ Here is the list of pre-defined models.
 * AnimeResult.class - This model is used for `.search(...)` method which returns a mini version of `Anime` that is returned by Jikan.
 * AnimeResult.class - This model is used for `.search(...)` method which returns a mini version of `Manga` that is returned by Jikan.
 
-## How to write my own model?
+## ❔ How to write my own model?
 You can easily write your own model with the help of `SerializedName` which comes from GSON. A model is basically a class
 which GSON will serialize the data into. For example, we have this data from Jikan:
 ```json
