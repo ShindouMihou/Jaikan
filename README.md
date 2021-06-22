@@ -21,8 +21,8 @@ receive our own Central Maven repository.
 ## 🖨️ How do you make a request?
 A simple anime search and transformation looks like this:
 ```java
-        Jaikan.search(Endpoints.SEARCH, AnimeResult.class, "anime", "Yuru Yuri").thenAccept(animeResults -> {
-           animeResults.stream().limit(5).forEach(animeResult -> {
+Jaikan.search(Endpoints.SEARCH, AnimeResult.class, "anime", "Yuru Yuri").thenAccept(animeResults -> {
+        animeResults.stream().limit(5).forEach(animeResult -> {
                Anime anime = animeResult.asAnime();
                System.out.println("Title: " + animeResult.getTitle());
                System.out.println("\nSynopsis: " + anime.getSynopsis());
