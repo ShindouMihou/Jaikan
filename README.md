@@ -228,3 +228,7 @@ public class Anime {
 
 }
 ```
+
+## ✈️ How frequently will you update this?
+Jaikan will be updated as soon as my Discord bot encounters an issue with it since it has replaced Schalar's Jikan wrapper on my Discord bot (the reason why I created
+this wrapper in the first place), you don't have to worry about updates as long as I am still active in the developer community which is going to be my future job. >w<
