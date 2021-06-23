@@ -19,21 +19,18 @@ caching libraries I have used. This both helps reduce the requests you make towa
 By default, all items are cached up to 6 hours before they are evicted from the cache.
 
 ## 💻 How to install?
-For installation details, please check out [Jitpack](https://jitpack.io/#pw.mihou/Jaikan) until we are able to 
-receive our own Central Maven repository.
-
 To install via Maven:
 ```xml
 <dependency>
   <groupId>pw.mihou</groupId>
   <artifactId>Jaikan</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
 </dependency>
 ```
 
 To install via Gradle:
 ```gradle
-implementation 'pw.mihou:Jaikan:1.0.0'
+implementation 'pw.mihou:Jaikan:1.0.1'
 ```
 
 Other Build Tools, please check out the Maven Repository at [Central Maven](https://search.maven.org/artifact/pw.mihou/Jaikan/)
@@ -41,21 +38,18 @@ Other Build Tools, please check out the Maven Repository at [Central Maven](http
 ## 🖨️ How do you make a request?
 A simple anime search and transformation looks like this:
 ```java
-Jaikan.search(Endpoints.SEARCH, AnimeResult.class, "anime", "Yuru Yuri").thenAccept(animeResults -> {
-        animeResults.stream().limit(5).forEach(animeResult -> {
+Jaikan.search(Endpoints.SEARCH, AnimeResult.class, "anime", "Yuru Yuri").stream().limit(5).forEach(animeResult -> {
                Anime anime = animeResult.asAnime();
                System.out.println("Title: " + animeResult.getTitle());
                System.out.println("\nSynopsis: " + anime.getSynopsis());
                System.out.println("\n\n");
-           });
-        });
+});
 ```
 
 You can also get the Anime immediately if you have the MyAnimeList ID (MAL ID), for example:
 ```java
-Jaikan.as(Endpoints.OBJECT, Anime.class, "anime", 40842).thenAccept(anime -> {
-            System.out.println(anime.getTitle());
-        });
+Anime anime = Jaikan.as(Endpoints.OBJECT, Anime.class, "anime", 40842);
+System.out.println(anime.getTitle());
 ```
 
 This will output: `Idoly Pride`.
