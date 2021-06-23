@@ -24,13 +24,13 @@ To install via Maven:
 <dependency>
   <groupId>pw.mihou</groupId>
   <artifactId>Jaikan</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
 </dependency>
 ```
 
 To install via Gradle:
 ```gradle
-implementation 'pw.mihou:Jaikan:1.0.1'
+implementation 'pw.mihou:Jaikan:1.0.2'
 ```
 
 Other Build Tools, please check out the Maven Repository at [Central Maven](https://search.maven.org/artifact/pw.mihou/Jaikan/)

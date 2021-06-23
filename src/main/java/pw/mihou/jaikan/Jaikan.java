@@ -14,6 +14,7 @@ import pw.mihou.jaikan.endpoints.Endpoint;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -103,7 +104,7 @@ public class Jaikan {
     private static String __request(String s) {
         try {
             if(!checkRateLimit()) {
-                TimeUnit.NANOSECONDS.sleep(rateDuration.getNano());
+                Thread.sleep(rateDuration.toMillis());
             }
 
             reqTimer = System.currentTimeMillis();
@@ -111,7 +112,6 @@ public class Jaikan {
                     .header("User-Agent", userAgent).get().build())
                     .execute()) {
 
-                String body = response.body().string();
                 if (response.code() == 429) {
                     log.warn("Jaikan was struck with an rate-limit, attempting to retry soon... ({})", s);
                     // This is for protection reasons.
@@ -119,13 +119,19 @@ public class Jaikan {
                     return __request(s);
                 }
 
-                if (response.code() != 200) {
-                    log.error("An error occurred while trying to fetch {} with Jaikan, status code: {}", s, response.code());
+                if(response.body() != null) {
+
+                    String body = Objects.requireNonNull(response.body()).string();
+                    if (response.code() != 200) {
+                        log.error("An error occurred while trying to fetch {} with Jaikan, status code: {}", s, response.code());
+                        return "";
+                    }
+
+                    response.close();
+                    return body;
+                } else {
                     return "";
                 }
-
-                response.close();
-                return body;
             } catch (IOException exception) {
                 log.error("An error occurred while trying to fetch from {}: {}!\nAttempting to retry soon...", s, exception.getMessage());
             }
