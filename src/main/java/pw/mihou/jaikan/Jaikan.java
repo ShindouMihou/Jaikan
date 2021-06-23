@@ -3,8 +3,6 @@ package pw.mihou.jaikan;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.gson.Gson;
-import io.github.bucket4j.*;
-import io.github.bucket4j.local.SynchronizationStrategy;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -151,6 +149,13 @@ public class Jaikan {
         Jaikan.rateDuration = duration;
     }
 
+    /**
+     * Sets the user-agent that the client will use to send requests to the API.
+     * <h3>By default, this is Jaikan (Java 1.8/https://github.com/ShindouMihou/Jaikan) but we recommend
+     * customizing this to help the API developers identify.</h3>
+     *
+     * @param userAgent The user-agent to use when sending requests.
+     */
     public static void setUserAgent(String userAgent) {
         Jaikan.userAgent = userAgent;
     }
