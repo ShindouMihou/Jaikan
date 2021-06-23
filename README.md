@@ -38,7 +38,8 @@ Other Build Tools, please check out the Maven Repository at [Central Maven](http
 ## 🖨️ How do you make a request?
 A simple anime search and transformation looks like this:
 ```java
-Jaikan.search(Endpoints.SEARCH, AnimeResult.class, "anime", "Yuru Yuri").stream().limit(5).forEach(animeResult -> {
+Jaikan.search(Endpoints.SEARCH, AnimeResult.class, "anime", "Yuru Yuri")
+  .stream().limit(5).forEach(animeResult -> {
                Anime anime = animeResult.asAnime();
                System.out.println("Title: " + animeResult.getTitle());
                System.out.println("\nSynopsis: " + anime.getSynopsis());
