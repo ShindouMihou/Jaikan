@@ -1,11 +1,10 @@
 package pw.mihou.jaikan;
 
-import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.gson.Gson;
-import io.github.resilience4j.retry.Retry;
-import io.github.resilience4j.retry.RetryConfig;
+import io.github.bucket4j.*;
+import io.github.bucket4j.local.SynchronizationStrategy;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -17,20 +16,20 @@ import pw.mihou.jaikan.endpoints.Endpoint;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class Jaikan {
 
-    private static final Retry retry = Retry.of("jaikanRetry", RetryConfig.custom()
-            .waitDuration(Duration.ofSeconds(2)).maxAttempts(10).build());
     private static final OkHttpClient client = new OkHttpClient.Builder().connectTimeout(Duration.ofSeconds(5))
             .build();
     private static final Duration duration = Duration.ofHours(6);
     private static final Cache<String, String> requestCache = Caffeine.newBuilder()
             .expireAfterWrite(duration).build();
+    private static Duration rateDuration = Duration.ofMillis(2000);
     private static final Logger log = LoggerFactory.getLogger("Jaikan");
-    private static final Gson gson = new Gson().newBuilder().create();
+    private static final Gson gson = new Gson().newBuilder().serializeNulls().create();
+    private static volatile long reqTimer = 0L;
     private static String userAgent = "Jaikan (Java 1.8/https://github.com/ShindouMihou/Jaikan)";
 
     /**
@@ -44,14 +43,14 @@ public class Jaikan {
      *                 {@link pw.mihou.jaikan.endpoints.Endpoints} such as
      *                 {@link pw.mihou.jaikan.endpoints.Endpoints#SEARCH}
      *                 which is used to search for either a manga or something else.
-     * @param castTo The model to parse the results into, for example, {@link pw.mihou.jaikan.models.AnimeResult}
-     * @param values The values to append onto the endpoint (for example, we have a query foramt of
-     * @param <T> The model it will be cast on, for example, {@link pw.mihou.jaikan.models.AnimeResult}
+     * @param castTo   The model to parse the results into, for example, {@link pw.mihou.jaikan.models.AnimeResult}
+     * @param values   The values to append onto the endpoint (for example, we have a query format of
+     * @param <T>      The model it will be cast on, for example, {@link pw.mihou.jaikan.models.AnimeResult}
      * @return A list of all the models with all the possible values filled.
      */
-    public static <T> CompletableFuture<List<T>> search(Endpoint endpoint, Class<T> castTo, Object... values) {
-            return genericRequest(endpoint, values).thenApply(s -> new JSONObject(s).getJSONArray("results")
-                    .toList().stream().map(o -> gson.fromJson(gson.toJson(o), castTo)).collect(Collectors.toList()));
+    public static <T> List<T> search(Endpoint endpoint, Class<T> castTo, Object... values) {
+        return new JSONObject(genericRequest(endpoint, values)).getJSONArray("results")
+                .toList().stream().map(o -> gson.fromJson(gson.toJson(o), castTo)).collect(Collectors.toList());
     }
 
     /**
@@ -65,17 +64,13 @@ public class Jaikan {
      *                 {@link pw.mihou.jaikan.endpoints.Endpoints} such as
      *                 {@link pw.mihou.jaikan.endpoints.Endpoints#SEARCH}
      *                 which is used to search for either a manga or something else.
-     * @param castTo The model to parse the results into, for example, {@link pw.mihou.jaikan.models.Anime}
-     * @param values The values to append onto the endpoint (for example, we have a query foramt of
-     * @param <T> The model it will be cast on, for example, {@link pw.mihou.jaikan.models.Anime}
+     * @param castTo   The model to parse the results into, for example, {@link pw.mihou.jaikan.models.Anime}
+     * @param values   The values to append onto the endpoint (for example, we have a query foramt of
+     * @param <T>      The model it will be cast on, for example, {@link pw.mihou.jaikan.models.Anime}
      * @return The model with all the possible values filled.
      */
-    public static <T> CompletableFuture<T> as(Endpoint endpoint, Class<T> castTo, Object... values) {
-        return genericRequest(endpoint, values).thenApply(s -> {
-            if(s != null)
-                return gson.fromJson(s, castTo);
-            return null;
-        });
+    public static <T> T as(Endpoint endpoint, Class<T> castTo, Object... values) {
+        return gson.fromJson(genericRequest(endpoint, values), castTo);
     }
 
     /**
@@ -89,47 +84,74 @@ public class Jaikan {
      *                 {@link pw.mihou.jaikan.endpoints.Endpoints} such as
      *                 {@link pw.mihou.jaikan.endpoints.Endpoints#SEARCH}
      *                 which is used to search for either a manga or something else.
-     * @param values The values to append onto the endpoint (for example, we have a query foramt of
+     * @param values   The values to append onto the endpoint (for example, we have a query foramt of
      * @return Returns the result from the endpoint.
      */
-    public static CompletableFuture<String> genericRequest(Endpoint endpoint, Object... values) {
-        return CompletableFuture.supplyAsync(() -> requestCache.get(endpoint.format(values), s -> {
-            try {
-                Response response = client.newCall(new Request.Builder().url(s)
-                        .header("User-Agent", userAgent).get().build())
-                        .execute();
-                if(response.code() == 429){
-                    log.warn("Jaikan was struck with an rate-limit, attempting to retry in 2 seconds... ({})", s);
-                    return retry.executeCallable(() -> genericRequest(endpoint, values).join());
-                }
-
-                if(response.code() != 200){
-                    log.error("An error occurred while trying to fetch {} with Jaikan, status code: {}", s, response.code());
-                    return null;
-                }
-
-                if(response.body() != null) {
-                    return response.body().string();
-                }
-
-                return null;
-            } catch (IOException exception) {
-                log.error("An error occurred while trying to fetch from {}: {}!\nAttempting to retry in 2 seconds...", s, exception.getMessage());
-                try {
-                    return retry.executeCallable(() -> genericRequest(endpoint, values).join());
-                } catch (Exception e) {
-                    log.error("Attempt to retry fetch of {} was received with an error: {}! Aborting request!", s, e.getMessage());
-                    e.printStackTrace();
-                }
-            } catch (Exception exception) {
-                log.error("Attempt to retry fetch of {} was received with an error: {}! Aborting request!", s, exception.getMessage());
-                exception.printStackTrace();
-            }
-            return null;
-        }));
+    public static String genericRequest(Endpoint endpoint, Object... values) {
+        return requestCache.get(endpoint.format(values), Jaikan::__request);
     }
 
-    public static void setUserAgent(String userAgent){
+    private static synchronized boolean checkRateLimit() {
+        return reqTimer + rateDuration.toMillis() < System.currentTimeMillis();
+    }
+
+    /**
+     * <h3>This is an internal method, please do not attempt to mess with it unless you know what you are doing.</h3>
+     * This is used to send requests to the specified location.
+     *
+     * @param s The complete URL to send the request.
+     * @return The server response.
+     */
+    private static String __request(String s) {
+        try {
+            if(!checkRateLimit()) {
+                TimeUnit.NANOSECONDS.sleep(rateDuration.getNano());
+            }
+
+            reqTimer = System.currentTimeMillis();
+            try (Response response = client.newCall(new Request.Builder().url(s)
+                    .header("User-Agent", userAgent).get().build())
+                    .execute()) {
+
+                String body = response.body().string();
+                if (response.code() == 429) {
+                    log.warn("Jaikan was struck with an rate-limit, attempting to retry soon... ({})", s);
+                    // This is for protection reasons.
+                    TimeUnit.SECONDS.sleep(5);
+                    return __request(s);
+                }
+
+                if (response.code() != 200) {
+                    log.error("An error occurred while trying to fetch {} with Jaikan, status code: {}", s, response.code());
+                    return "";
+                }
+
+                response.close();
+                return body;
+            } catch (IOException exception) {
+                log.error("An error occurred while trying to fetch from {}: {}!\nAttempting to retry soon...", s, exception.getMessage());
+            }
+        } catch (InterruptedException e) {
+            log.error("Attempt to retry fetch of {} was received with an error: {}! Aborting request!", s, e.getMessage());
+        }
+        return "";
+    }
+
+    /**
+     * Do you think the rate of requests is too slow, change the value here.
+     * By default, we are running at 1 request every 2 seconds (the best number according to our tests of 10 requests within a second).
+     * Be careful with rate-limits though as one mistake can cause mayhem to your entire request poll.
+     *
+     * <h3>We do not recommend changing the rate-limit value UNLESS you are experiencing rate-limits even with 2 seconds,
+     * that is when you will change the value to a longer one.</h3>
+     *
+     * @param duration The duration when the rate-limit should function.
+     */
+    public static void setRatelimit(Duration duration) {
+        Jaikan.rateDuration = duration;
+    }
+
+    public static void setUserAgent(String userAgent) {
         Jaikan.userAgent = userAgent;
     }
 

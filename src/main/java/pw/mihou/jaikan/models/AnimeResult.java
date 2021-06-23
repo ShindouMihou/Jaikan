@@ -79,7 +79,7 @@ public class AnimeResult {
     }
 
     public Anime asAnime(){
-        return Jaikan.as(Endpoints.OBJECT, Anime.class, "anime", this.id).join();
+        return Jaikan.as(Endpoints.OBJECT, Anime.class, "anime", this.id);
     }
 
 

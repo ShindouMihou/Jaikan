@@ -79,7 +79,7 @@ public class MangaResult {
     }
 
     public Manga as(){
-        return Jaikan.as(Endpoints.OBJECT, Manga.class, "manga", this.id).join();
+        return Jaikan.as(Endpoints.OBJECT, Manga.class, "manga", this.id);
     }
 
 }
