@@ -6,7 +6,7 @@
 
     <groupId>pw.mihou</groupId>
     <artifactId>Jaikan</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.5</version>
     <name>Jaikan</name>
     <description>A generic Java wrapper for Jaikan that aims to be as simple and lightweight to use.</description>
     <url>https://github.com/ShindouMihou/Jaikan/</url>

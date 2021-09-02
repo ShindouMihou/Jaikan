@@ -1,9 +1,6 @@
 package pw.mihou.jaikan;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.gson.Gson;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.json.JSONObject;
@@ -15,16 +12,17 @@ import pw.mihou.jaikan.endpoints.Endpoint;
 import pw.mihou.jaikan.endpoints.implementations.EndpointImpl;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class Jaikan {
+public class Jaikan4 {
 
     private static JaikanConfiguration configuration = JaikanConfiguration.ofDefaults();
-    private static final Logger log = LoggerFactory.getLogger("Jaikan v3");
+    private static final Logger log = LoggerFactory.getLogger("Jaikan v4");
     private static final Gson gson = new Gson();
     private static volatile long reqTimer = 0L;
 
@@ -46,7 +44,7 @@ public class Jaikan {
      */
     public static <T> List<T> search(Endpoint endpoint, Class<T> castTo, Object... values) {
         return new JSONObject(genericRequest(endpoint, values))
-                .getJSONArray("results")
+                .getJSONArray("data")
                 .toList()
                 .stream()
                 .map(o -> gson.fromJson(gson.toJson(o), castTo))
@@ -88,10 +86,10 @@ public class Jaikan {
      * @return Returns the result from the endpoint.
      */
     public static String genericRequest(Endpoint endpoint, Object... values) {
-        if (!endpoint.supportsV3())
-            throw new IllegalArgumentException("The endpoint used does not support Jikan V3, please try using Jaikan4 instead.");
+        if (!endpoint.supportsV4())
+            throw new IllegalArgumentException("The endpoint used does not support Jikan V4, please try using Jaikan instead.");
 
-        return configuration.getRequestCache().get(((EndpointImpl) endpoint).formatV3(values), Jaikan::__request);
+        return configuration.getRequestCache().get(((EndpointImpl) endpoint).formatV4(values), Jaikan4::__request);
     }
 
     private static synchronized boolean checkRateLimit() {
@@ -153,7 +151,7 @@ public class Jaikan {
      * @param configuration The new Jaikan configuration to use.
      */
     public static void setConfiguration(JaikanConfiguration configuration) {
-        Jaikan.configuration = configuration;
+        Jaikan4.configuration = configuration;
     }
 
     /**
@@ -162,7 +160,7 @@ public class Jaikan {
      * @param configuration The new Jaikan configuration to use.
      */
     public static void setConfiguration(Function<JaikanConfigurationBuilder, JaikanConfiguration> configuration) {
-        Jaikan.configuration = configuration.apply(JaikanConfiguration.newBuilder());
+        Jaikan4.configuration = configuration.apply(JaikanConfiguration.newBuilder());
     }
 
 }

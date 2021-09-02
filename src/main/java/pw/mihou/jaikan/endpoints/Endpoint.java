@@ -1,35 +1,35 @@
 package pw.mihou.jaikan.endpoints;
 
-public class Endpoint {
-
-    public String endpoint;
+public interface Endpoint {
 
     /**
-     * Creates a new Endpoint that will be used by the generic API.
+     * Returns the unformatted endpoints that Jaikan uses, this is used to grab
+     * the endpoint for v3.
      *
-     * @param endpoint The generic endpoint that will be formatted later using {@link Endpoint#format(Object...)}
-     *                 An example of a generic endpoint is: {@link Endpoints#OBJECT} or {@link Endpoints#SEARCH}
-     *                 which looks like: https://api.jikan.moe/v3/search/%s?q=%s.
-     *                 The first %s stands for the type of item (for example, anime).
-     *                 The last %s stands for the query which, for example, is "Yuru Yuri".
-     *                 The endpoint would then become something like: <a href="https://api.jikan.moe/v3/search/anime?q=Yuru%20Yuri">https://api.jikan.moe/v3/search/anime?q=Yuru Yuri</a>
+     * @return The unformatted v3 endpoint that Jaikan is using.
      */
-    public Endpoint(String endpoint) {
-        this.endpoint = endpoint;
-    }
+    String getEndpointV3();
 
     /**
-     * Fills the placeholders with the following values.
+     * Returns the unformatted endpoints that Jaikan uses, this is used to grab
+     * the endpoint for v4.
      *
-     * @param values The values to fill the placeholders (IN ORDER).
-     * @return The formatted endpoint.
+     * @return The unformatted v4 endpoint that Jaikan is using.
      */
-    public String format(Object... values){
-        return String.format(endpoint, values);
-    }
+    String getEndpointV4();
 
-    @Override
-    public String toString() {
-        return endpoint;
-    }
+    /**
+     * Checks if this endpoint supports the v4 Jikan.
+     *
+     * @return Does this endpoint have a v4 equivalent?
+     */
+    boolean supportsV4();
+
+    /**
+     * Checks if this endpoint supports the v3 Jikan.
+     *
+     * @return Does this endpoint have a v3 equivalent?
+     */
+    boolean supportsV3();
+
 }
