@@ -13,10 +13,34 @@ This also helps when a feature of Jikan is suddenly breaks on the library and yo
 endpoint and model that has all the fixes needed ~~and most importantly, it won't require much if any updates, laziness is a sin we all love~~ which
 also means, you don't have to keep checking the library for updates and you could immediately implement new features yourself! >W< (Yes, lazy developer).
 
+## ⭐ Configurating Jaikan
+You can easily configure either `Jaikan4` or `Jaikan` through the `.setConfiguration(builder -> ...)` method which allows you to create a new Jaikan
+Configuration easily, you can also opt to use a pre-made one `.setConfiguration(configuration)` if you want since both methods are technically the same.
+
+An example of this is:
+```java
+Jaikan4.setConfiguration(builder -> builder
+        .setOkHTTPClient(new OkHttpClient.Builder().connectTimeout(Duration.ofSeconds(5)).build())
+        .setUserAgent("Jaikan 4 (by Mihou)")
+        .setRatelimit(Duration.ofSeconds(2000))
+        .setRequestCache(caffeine -> caffeine.expireAfterWrite(Duration.ofHours(6)))
+        .build());
+```
+
+Both `Jaikan` and `Jaikan4` have their own independent configuration, so feel free to configure either one without worrying of either causing issues
+with the other.
+
 ## 📦 Are all results cached?
 Yes, all results are cached with the help of [Caffeine](https://github.com/ben-manes/caffeine) which is one of the best
 caching libraries I have used. This both helps reduce the requests you make towards Jikan but also speeds up all your repeated requests.
-By default, all items are cached up to 6 hours before they are evicted from the cache.
+By default, all items are cached up to 6 hours before they are evicted from the cache, you can configure this time via the `.setConfiguration(...)` 
+static method of `Jaikan` or `Jaikan4`.
+
+## 🌡 Supported Jikan Versions
+| JIKAN API VERSION 	| SUPPORTED VERSIONS OF JAIKAN 	|
+|:-----------------:	|:----------------------------:	|
+|         v3        	|         ALL VERSIONS         	|
+|         v4        	|            v1.0.5+           	|
 
 ## 💻 How to install?
 To install via Maven:
@@ -24,18 +48,20 @@ To install via Maven:
 <dependency>
   <groupId>pw.mihou</groupId>
   <artifactId>Jaikan</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.5</version>
 </dependency>
 ```
 
 To install via Gradle:
 ```gradle
-implementation 'pw.mihou:Jaikan:1.0.2'
+implementation 'pw.mihou:Jaikan:1.0.5'
 ```
 
 Other Build Tools, please check out the Maven Repository at [Central Maven](https://search.maven.org/artifact/pw.mihou/Jaikan/)
 
 ## 🖨️ How do you make a request?
+
+#### Jikan v3
 A simple anime search and transformation looks like this:
 ```java
 Jaikan.search(Endpoints.SEARCH, AnimeResult.class, "anime", "Yuru Yuri")
@@ -54,6 +80,24 @@ System.out.println(anime.getTitle());
 ```
 
 This will output: `Idoly Pride`.
+
+#### Jikan v4
+A simple anime search and transformation looks like this:
+```java
+Jaikan4.search(Endpoints.SEARCH, AnimeResult.class, "anime", "Yuru Yuri")
+  .stream().limit(5).forEach(animeResult -> {
+               Anime anime = animeResult.asAnime();
+               System.out.println("Title: " + animeResult.getTitle());
+               System.out.println("\nSynopsis: " + anime.getSynopsis());
+               System.out.println("\n\n");
+});
+```
+
+You can also get the Anime immediately if you have the MyAnimeList ID (MAL ID), for example:
+```java
+Anime anime = Jaikan4.as(Endpoints.OBJECT, Anime.class, "anime", 40842);
+System.out.println(anime.getTitle());
+```
 
 ## ❔ Are there any pre-defined endpoints and models?
 Yes, there are pre-defined models and endpoints which are specifically the ones I made intiailly for my Discord bot. The list
@@ -76,131 +120,30 @@ You can easily create an endpoint by using the following:
 ```java
 Endpoint custom = Endpoints.create("https://api.jikan.moe/...");
 ```
-Every endpoint is formatted with `String.format(...)` which is why you have to follow the formatter placeholders on https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html which is basically:
-- `%s` for Strings.
-- `%d` for Integers.
-- `%b` for booleans.
 
-An example of a generic endpoint is: `https://api.jikan.moe/v3/%s/%d/` which is the endpoint for `Endpoints.OBJECT`. Basically, you can format it to become: `https://api.jikan.moe/v3/anime/1/` which is an actual working route on Jikan.
+You can also create an endpoint that supports both v3 and v4, for example:
+```java
+Endpoint custom = Endpoints.create("https://api.jikan.moe/v3/...",  "https://api.jikan.moe/v4/...");
+```
+
+If you want, you can create a custom endpoint that only supports v4:
+```java
+Endpoint custom = Endpoints.createV4("https://api.jikan.moe/v4/...");
+```
+
+Every endpoint in Jaikan are generic in which they must use our custom placeholder system (implemented since v1.0.5) which uses `{}` as the placeholder,
+a simple example of a generic endpoint is: `https://api.jikan.moe/v4/{}/{}/` which is the endpoint for `Endpoints.OBJECT` (v4, v3 is also supported with the same object).
+
+In a sense, you can format it to become: `https://api.jikan.moe/v4/anime/1/`.
+
+## ❓ Are endpoints cross-compatible with each version of Jikan by default?
+All the endpoints on Jaikan are not cross-compatible by default (the pre-defined ones are, though) but you can make endpoints
+that can be used by `Jaikan4` and `Jaikan` through the `Endpoints.create(String, String)` class with the first `String` being the `v3` endpoint and
+the second one being `v4` endpoint.
 
 ## 🍱 How to write my own model?
 You can easily write your own model with the help of `SerializedName` which comes from GSON. A model is basically a class
-which GSON will serialize the data into. For example, we have this data from Jikan:
-```json
-{
-  "request_hash": "request:anime:e31e3e824cbf63dd6808c6334783d6893d37a911",
-  "request_cached": true,
-  "request_cache_expiry": 68121,
-  "mal_id": 40842,
-  "url": "https://myanimelist.net/anime/40842/Idoly_Pride",
-  "image_url": "https://cdn.myanimelist.net/images/anime/1025/111962.jpg",
-  "trailer_url": "https://www.youtube.com/embed/TzvYKewUXSc?enablejsapi=1&wmode=opaque&autoplay=1",
-  "title": "Idoly Pride",
-  "title_english": "Idoly Pride",
-  "title_japanese": "IDOLY PRIDE",
-  "title_synonyms": [],
-  "type": "TV",
-  "source": "Original",
-  "episodes": 12,
-  "status": "Finished Airing",
-  "airing": false,
-  "aired": {
-    "from": "2021-01-10T00:00:00+00:00",
-    "to": "2021-03-28T00:00:00+00:00",
-    "prop": {
-      "from": {
-        "day": 10,
-        "month": 1,
-        "year": 2021
-      },
-      "to": {
-        "day": 28,
-        "month": 3,
-        "year": 2021
-      }
-    },
-    "string": "Jan 10, 2021 to Mar 28, 2021"
-  },
-  "duration": "23 min per ep",
-  "rating": "None",
-  "score": 7.4,
-  "scored_by": 7820,
-  "rank": 1944,
-  "popularity": 2986,
-  "members": 32827,
-  "favorites": 286,
-  "synopsis": "To become an idol, I shed blood, sweat, and tears. Even so, I push on. I want to shine. I want to earn it. I want to become number one. I want to smile. I want to make my dreams come true. I want to look back at a sea of people. I want to be noticed. I want to find it. I want to overcome obstacles. I have only pride inside my chest. No one is in the spotlight from the beginning. Everyone is weak. Only those who do not break will reach the highest peak to become an idol. This is the story of idols who face big dreams and harsh reality. (Source: MAL News)",
-  "background": null,
-  "premiered": "Winter 2021",
-  "broadcast": "Sundays at 23:30 (JST)",
-  "related": {
-    "Other": [
-      {
-        "mal_id": 48427,
-        "type": "anime",
-        "name": "The Sun, Moon and Stars",
-        "url": "https://myanimelist.net/anime/48427/The_Sun_Moon_and_Stars"
-      }
-    ]
-  },
-  "producers": [
-    {
-      "mal_id": 213,
-      "type": "anime",
-      "name": "Half H.P Studio",
-      "url": "https://myanimelist.net/anime/producer/213/Half_HP_Studio"
-    },
-    {
-      "mal_id": 1289,
-      "type": "anime",
-      "name": "F.M.F",
-      "url": "https://myanimelist.net/anime/producer/1289/FMF"
-    },
-    {
-      "mal_id": 2165,
-      "type": "anime",
-      "name": "Wicky.Records",
-      "url": "https://myanimelist.net/anime/producer/2165/WickyRecords"
-    }
-  ],
-  "licensors": [
-    {
-      "mal_id": 102,
-      "type": "anime",
-      "name": "Funimation",
-      "url": "https://myanimelist.net/anime/producer/102/Funimation"
-    }
-  ],
-  "studios": [
-    {
-      "mal_id": 456,
-      "type": "anime",
-      "name": "Lerche",
-      "url": "https://myanimelist.net/anime/producer/456/Lerche"
-    }
-  ],
-  "genres": [
-    {
-      "mal_id": 19,
-      "type": "anime",
-      "name": "Music",
-      "url": "https://myanimelist.net/anime/genre/19/Music"
-    }
-  ],
-  "opening_themes": [
-    "\"IDOLY PRIDE\" by Hoshimi Production (星見プロダクション)"
-  ],
-  "ending_themes": [
-    "#1: \"The Sun, Moon and Stars\" by Hoshimi Production (星見プロダクション) (eps 1-2, 5-6)",
-    "#2: \"The Last Chance\" by LizNoir (Rio & Aoi Version) (eps 3, 11)",
-    "#3: \"réaliser\" by TRINITYAiLE (eps 4, 10)",
-    "#4: \"Shining Days\" by Sunny Peace (サニーピース) (ep 7)",
-    "#5: \"Daytime Moon\" by Tsuki no Tempest (月のテンペスト) (ep 8)",
-    "#6: \"song for you (SUNNY PEACE ver.)\" by SUNNY PEACE (ep 9)",
-    "#7: \"Pray for you\" by Hoshimi Production (星見プロダクション) (ep 12)"
-  ]
-}
-```
+which GSON will serialize the data into. For example, we have this data from Jikan: https://api.jikan.moe/v3/anime/40842
 
 We can easily create a model for it that looks like this (This example comes from the pre-defined model `Anime`, also it is 
 recommended to put fallback variables if the value is not on the results since it will be serialized as null):
@@ -209,9 +152,12 @@ public class Anime {
 
     @SerializedName("mal_id")
     public int id = 0;
+    
     public String url = "";
+    
     @SerializedName("image_url")
     public String image = "";
+    
     public String title = "";
     public boolean airing = false;
     public String synopsis = "";
@@ -223,6 +169,7 @@ public class Anime {
     public int members = 0;
     @SerializedName("scored_by")
     public int scored = 0;
+    
     public int popularity = 0;
     public int favorites = 0;
     public List<Nameable> genres = Collections.emptyList();
@@ -236,8 +183,10 @@ public class Anime {
     public String status = "";
     public String source = "";
     public String broadcast = "";
+    
     @SerializedName("opening_themes")
     public List<String> opening = Collections.emptyList();
+    
     @SerializedName("ending_Themes")
     public List<String> ending = Collections.emptyList();
 
