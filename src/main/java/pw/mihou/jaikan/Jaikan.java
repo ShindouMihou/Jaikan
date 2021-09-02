@@ -27,7 +27,7 @@ public class Jaikan {
             .expireAfterWrite(duration).build();
     private static Duration rateDuration = Duration.ofMillis(2000);
     private static final Logger log = LoggerFactory.getLogger("Jaikan");
-    private static final Gson gson = new Gson().newBuilder().serializeNulls().create();
+    private static final Gson gson = new Gson();
     private static volatile long reqTimer = 0L;
     private static String userAgent = "Jaikan (Java 1.8/https://github.com/ShindouMihou/Jaikan)";
 
