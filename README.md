@@ -37,10 +37,11 @@ By default, all items are cached up to 6 hours before they are evicted from the 
 static method of `Jaikan` or `Jaikan4`.
 
 ## 🌡 Supported Jikan Versions
-| JIKAN API VERSION 	| SUPPORTED VERSIONS OF JAIKAN 	|
-|:-----------------:	|:----------------------------:	|
-|         v3        	|         ALL VERSIONS         	|
-|         v4        	|            v1.0.5+           	|
+Here is a table that shows which API version is supported starting from which version of Jaikan.
+| Jikan API Version 	| Supported from Jaikan Version 	|
+|:-----------------:	|:-----------------------------:	|
+|         v3        	|            v1.0.0+            	|
+|         v4        	|            v1.0.5+            	|
 
 ## 💻 How to install?
 To install via Maven:
@@ -61,7 +62,7 @@ Other Build Tools, please check out the Maven Repository at [Central Maven](http
 
 ## 🖨️ How do you make a request?
 
-#### Jikan v3
+### Making a request to Jikan v3
 A simple anime search and transformation looks like this:
 ```java
 Jaikan.search(Endpoints.SEARCH, AnimeResult.class, "anime", "Yuru Yuri")
@@ -79,9 +80,7 @@ Anime anime = Jaikan.as(Endpoints.OBJECT, Anime.class, "anime", 40842);
 System.out.println(anime.getTitle());
 ```
 
-This will output: `Idoly Pride`.
-
-#### Jikan v4
+### Making a request to Jikan v4
 A simple anime search and transformation looks like this:
 ```java
 Jaikan4.search(Endpoints.SEARCH, AnimeResult.class, "anime", "Yuru Yuri")
@@ -103,12 +102,12 @@ System.out.println(anime.getTitle());
 Yes, there are pre-defined models and endpoints which are specifically the ones I made intiailly for my Discord bot. The list
 of them are as written below.
 
-**Pre-defined Endpoints**
+### Pre-defined Endpoints
 Here is the list of pre-defined endpoints.
 * Endpoints.SEARCH - This endpoint is used to search for animes, mangas, etc. It requires two values: type of object and query (for example, anime and "Yuru Yuri").
 * Endpoints.OBJECT - This endpoint is used to retrieve the full results of animes, mangas, etc. It requires two values as well, same as above.
 
-**Pre-defined Models**
+### Pre-defined Models
 Here is the list of pre-defined models.
 * Anime.class - This model is used for full anime results (not recommended to use it on `.search(...)` method but is instead used for `.as(...)` method).
 * Manga.class - This model is the same as the `Anime.class` and is not recommended to use for `.search(...)` method but is instead used for `.as(...)` method.
@@ -131,10 +130,16 @@ If you want, you can create a custom endpoint that only supports v4:
 Endpoint custom = Endpoints.createV4("https://api.jikan.moe/v4/...");
 ```
 
-Every endpoint in Jaikan are generic in which they must use our custom placeholder system (implemented since v1.0.5) which uses `{}` as the placeholder,
-a simple example of a generic endpoint is: `https://api.jikan.moe/v4/{}/{}/` which is the endpoint for `Endpoints.OBJECT` (v4, v3 is also supported with the same object).
+Every endpoint in Jaikan must follow the following rules:
+- If a placeholder for a value is needed, you must use `{}` which indicates `value to be filled` for Jaikan.
 
-In a sense, you can format it to become: `https://api.jikan.moe/v4/anime/1/`.
+The custom placeholder system of Jaikan is inspired a bit by SLF4J's placeholder system in which we use `{}` to replace values with, for example, 
+if you want to format `https://api.jikan.moe/v4/{}/{}/` with `anime, 1` then all we need to do is fill the `{}` with the values in specific order to make it
+into `https://api.jikan.moe/v4/anime/1/`.
+
+If creating a module pack for Jaikan, please follow the following rules (at least):
+1. All endpoints **SHOULD** support both v3 and v4, allowing the end-user to use the same endpoint for both versions (see: [reference](https://github.com/ShindouMihou/Jaikan#-are-endpoints-cross-compatible-with-each-version-of-jikan-by-default))
+2. The endpoints **SHOULD** be as generic as possible, for example: `https://api.jikan.moe/v4/{}/{}/` which can be `https://api.jikan.moe/v4/anime/1/` or `https://api.jikan.moe/v4/manga/1/`.
 
 ## ❓ Are endpoints cross-compatible with each version of Jikan by default?
 All the endpoints on Jaikan are not cross-compatible by default (the pre-defined ones are, though) but you can make endpoints
