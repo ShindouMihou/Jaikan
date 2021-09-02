@@ -13,7 +13,7 @@ This also helps when a feature of Jikan is suddenly breaks on the library and yo
 endpoint and model that has all the fixes needed ~~and most importantly, it won't require much if any updates, laziness is a sin we all love~~ which
 also means, you don't have to keep checking the library for updates and you could immediately implement new features yourself! >W< (Yes, lazy developer).
 
-## ⭐ Configurating Jaikan
+## ⭐ Configuring Jaikan
 You can easily configure either `Jaikan4` or `Jaikan` through the `.setConfiguration(builder -> ...)` method which allows you to create a new Jaikan
 Configuration easily, you can also opt to use a pre-made one `.setConfiguration(configuration)` if you want since both methods are technically the same.
 
@@ -22,7 +22,7 @@ An example of this is:
 Jaikan4.setConfiguration(builder -> builder
         .setOkHTTPClient(new OkHttpClient.Builder().connectTimeout(Duration.ofSeconds(5)).build())
         .setUserAgent("Jaikan 4 (by Mihou)")
-        .setRatelimit(Duration.ofSeconds(2000))
+        .setRatelimit(Duration.ofSeconds(2))
         .setRequestCache(caffeine -> caffeine.expireAfterWrite(Duration.ofHours(6)))
         .build());
 ```
