@@ -56,7 +56,7 @@ To install via Maven:
 <dependency>
   <groupId>pw.mihou</groupId>
   <artifactId>Jaikan</artifactId>
-  <version>1.0.6</version>
+  <version>v1.0.7</version>
 </dependency>
 ```
 
@@ -69,7 +69,7 @@ allprojects {
 	}
 }
 
-implementation 'pw.mihou:Jaikan:1.0.6'
+implementation 'pw.mihou:Jaikan:v1.0.7'
 ```
 
 Other Build Tools, please check out the Maven Repository at [Jitpack](https://jitpack.io/#pw.mihou/Jaikan/)
