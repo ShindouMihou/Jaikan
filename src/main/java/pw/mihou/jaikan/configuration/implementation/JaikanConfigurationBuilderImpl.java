@@ -7,12 +7,13 @@ import pw.mihou.jaikan.configuration.JaikanConfiguration;
 import pw.mihou.jaikan.configuration.JaikanConfigurationBuilder;
 
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 public class JaikanConfigurationBuilderImpl implements JaikanConfigurationBuilder{
 
     private OkHttpClient client = new OkHttpClient.Builder()
-            .connectTimeout(Duration.ofSeconds(5))
+            .connectTimeout(5, TimeUnit.SECONDS)
             .build();
 
     private Cache<String, String> requestCache = Caffeine.newBuilder()
