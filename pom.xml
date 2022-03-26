@@ -6,7 +6,7 @@
 
     <groupId>pw.mihou</groupId>
     <artifactId>Jaikan</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
     <name>Jaikan</name>
     <description>A generic Java wrapper for Jaikan that aims to be as simple and lightweight to use.</description>
     <url>https://github.com/ShindouMihou/Jaikan/</url>
@@ -43,8 +43,8 @@
 
 
     <properties>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
     </properties>
 
 
