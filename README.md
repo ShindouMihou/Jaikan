@@ -20,7 +20,7 @@ Configuration easily, you can also opt to use a pre-made one `.setConfiguration(
 An example of this is:
 ```java
 Jaikan4.setConfiguration(builder -> builder
-        .setOkHTTPClient(new OkHttpClient.Builder().connectTimeout(Duration.ofSeconds(5)).build())
+        .setOkHTTPClient(new OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS).build())
         .setUserAgent("Jaikan 4 (by Mihou)")
         .setRatelimit(Duration.ofSeconds(2))
         .setRequestCache(caffeine -> caffeine.expireAfterWrite(Duration.ofHours(6)))
@@ -46,19 +46,33 @@ Here is a table that shows which API version is supported starting from which ve
 ## 💻 How to install?
 To install via Maven:
 ```xml
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+
 <dependency>
   <groupId>pw.mihou</groupId>
   <artifactId>Jaikan</artifactId>
-  <version>1.0.5</version>
+  <version>1.0.6</version>
 </dependency>
 ```
 
 To install via Gradle:
 ```gradle
-implementation 'pw.mihou:Jaikan:1.0.5'
+allprojects {
+	repositories {
+		...
+		maven { url 'https://jitpack.io' }
+	}
+}
+
+implementation 'pw.mihou:Jaikan:1.0.6'
 ```
 
-Other Build Tools, please check out the Maven Repository at [Central Maven](https://search.maven.org/artifact/pw.mihou/Jaikan/)
+Other Build Tools, please check out the Maven Repository at [Jitpack](https://jitpack.io/#pw.mihou/Jaikan/)
 
 ## 🖨️ How do you make a request?
 
