@@ -2,6 +2,7 @@ package pw.mihou.jaikan.models;
 
 import com.google.gson.annotations.SerializedName;
 import pw.mihou.jaikan.Jaikan;
+import pw.mihou.jaikan.Jaikan4;
 import pw.mihou.jaikan.endpoints.Endpoints;
 
 import java.util.Date;
@@ -79,7 +80,7 @@ public class AnimeResult {
     }
 
     public Anime asAnime(){
-        return Jaikan.as(Endpoints.OBJECT, Anime.class, "anime", this.id);
+        return Jaikan4.as(Endpoints.OBJECT, Anime.class, "anime", this.id);
     }
 
 
