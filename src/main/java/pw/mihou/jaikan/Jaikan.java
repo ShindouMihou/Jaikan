@@ -1,9 +1,6 @@
 package pw.mihou.jaikan;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.gson.Gson;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.json.JSONObject;
@@ -13,6 +10,7 @@ import pw.mihou.jaikan.configuration.JaikanConfiguration;
 import pw.mihou.jaikan.configuration.JaikanConfigurationBuilder;
 import pw.mihou.jaikan.endpoints.Endpoint;
 import pw.mihou.jaikan.endpoints.implementations.EndpointImpl;
+import pw.mihou.jaikan.models.Anime;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,7 +22,7 @@ import java.util.stream.Collectors;
 public class Jaikan {
 
     private static JaikanConfiguration configuration = JaikanConfiguration.ofDefaults();
-    private static final Logger log = LoggerFactory.getLogger("Jaikan v3");
+    private static final Logger log = LoggerFactory.getLogger("Jaikan v4");
     private static final Gson gson = new Gson();
     private static volatile long reqTimer = 0L;
 
@@ -39,14 +37,14 @@ public class Jaikan {
      *                 {@link pw.mihou.jaikan.endpoints.Endpoints} such as
      *                 {@link pw.mihou.jaikan.endpoints.Endpoints#SEARCH}
      *                 which is used to search for either a manga or something else.
-     * @param castTo   The model to parse the results into, for example, {@link pw.mihou.jaikan.models.AnimeResult}
+     * @param castTo   The model to parse the results into, for example, {@link Anime}
      * @param values   The values to append onto the endpoint (for example, we have a query format of
-     * @param <T>      The model it will be cast on, for example, {@link pw.mihou.jaikan.models.AnimeResult}
+     * @param <T>      The model it will be cast on, for example, {@link Anime}
      * @return A list of all the models with all the possible values filled.
      */
     public static <T> List<T> search(Endpoint endpoint, Class<T> castTo, Object... values) {
         return new JSONObject(genericRequest(endpoint, values))
-                .getJSONArray("results")
+                .getJSONArray("data")
                 .toList()
                 .stream()
                 .map(o -> gson.fromJson(gson.toJson(o), castTo))
@@ -70,7 +68,7 @@ public class Jaikan {
      * @return The model with all the possible values filled.
      */
     public static <T> T as(Endpoint endpoint, Class<T> castTo, Object... values) {
-        return gson.fromJson(genericRequest(endpoint, values), castTo);
+        return gson.fromJson(new JSONObject(genericRequest(endpoint, values)).getJSONObject("data").toString(), castTo);
     }
 
     /**
@@ -88,10 +86,7 @@ public class Jaikan {
      * @return Returns the result from the endpoint.
      */
     public static String genericRequest(Endpoint endpoint, Object... values) {
-        if (!endpoint.supportsV3())
-            throw new IllegalArgumentException("The endpoint used does not support Jikan V3, please try using Jaikan4 instead.");
-
-        return configuration.getRequestCache().get(((EndpointImpl) endpoint).formatV3(values), Jaikan::__request);
+        return configuration.getRequestCache().get(((EndpointImpl) endpoint).create(values), Jaikan::__request);
     }
 
     private static synchronized boolean checkRateLimit() {

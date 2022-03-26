@@ -1,103 +1,43 @@
 package pw.mihou.jaikan.models;
 
 import com.google.gson.annotations.SerializedName;
+import pw.mihou.jaikan.models.components.Nameable;
+import pw.mihou.jaikan.models.components.Timestamps;
+import pw.mihou.jaikan.models.images.MediaTypes;
 
-import java.util.Collections;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class Manga {
 
-    @SerializedName("mal_id")
-    private int id = 0;
-    private String url = "";
-    @SerializedName("image_url")
-    private String image = "";
-    private String title = "";
-    private boolean publishing = false;
-    private String synopsis = "";
-    private String type = "";
-    private int chapters = 0;
-    private int volumes = 0;
-    private int rank = 0;
-    private double score = 0.0;
-    private Dates published = new Dates();
-    private int members = 0;
-    private String status = "";
-    private int popularity = 0;
-    private int favorites = 0;
-    private List<Nameable> genres = Collections.emptyList();
-    private List<Nameable> authors = Collections.emptyList();
+    @SerializedName("mal_id") public int id;
+    public String url;
 
-    public int getId() {
-        return id;
-    }
+    public String title;
+    @SerializedName("title_synonyms") public List<String> titleSynonyms;
 
-    public String getStatus() {
-        return status;
-    }
+    public String type;
+    public int chapters;
+    public int volumes;
 
-    public String getUrl() {
-        return url;
-    }
+    public String status;
+    public boolean publishing;
+    public Timestamps published;
 
-    public String getImage() {
-        return image;
-    }
+    public MediaTypes images;
 
-    public String getTitle() {
-        return title;
-    }
+    public double score;
+    @SerializedName("scored_by") public int scoredBy;
+    public int rank;
+    public int popularity;
+    public int members;
+    public int favorites;
 
-    public boolean isPublishing() {
-        return publishing;
-    }
+    public String synopsis;
+    public String background;
 
-    public String getSynopsis() {
-        return synopsis;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public int getChapters() {
-        return chapters;
-    }
-
-    public int getVolumes() {
-        return volumes;
-    }
-
-    public int getRank() {
-        return rank;
-    }
-
-    public double getScore() {
-        return score;
-    }
-
-    public Dates getPublished() {
-        return published;
-    }
-
-    public int getMembers() {
-        return members;
-    }
-
-    public int getPopularity() {
-        return popularity;
-    }
-
-    public int getFavorites() {
-        return favorites;
-    }
-
-    public List<Nameable> getGenres() {
-        return genres;
-    }
-
-    public List<Nameable> getAuthors() {
-        return authors;
-    }
+    public List<Nameable> authors;
+    public List<Nameable> serializations;
+    public List<Nameable> genres;
 
 }

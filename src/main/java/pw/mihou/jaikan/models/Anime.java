@@ -1,156 +1,49 @@
 package pw.mihou.jaikan.models;
 
 import com.google.gson.annotations.SerializedName;
+import pw.mihou.jaikan.models.components.Nameable;
+import pw.mihou.jaikan.models.components.Timestamps;
+import pw.mihou.jaikan.models.images.MediaTypes;
 
-import java.util.Collections;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class Anime {
 
-    @SerializedName("mal_id")
-    private int id = 0;
-    private String url = "";
-    @SerializedName("image_url")
-    private String image = "";
-    private String title = "";
-    private boolean airing = false;
-    private String synopsis = "";
-    private String type = "";
-    private int episodes = 0;
-    private int rank = 0;
-    private double score = 0.0;
-    private Dates aired = new Dates();
-    private int members = 0;
-    @SerializedName("scored_by")
-    private int scored = 0;
-    private int popularity = 0;
-    private int favorites = 0;
-    private List<Nameable> genres = Collections.emptyList();
-    private String premiered = "";
-    private String background = "";
-    private List<Nameable> producers = Collections.emptyList();
-    private List<Nameable> licensors = Collections.emptyList();
-    private List<Nameable> studios = Collections.emptyList();
-    private String rating = "";
-    private String duration = "";
-    private String status = "";
-    private String source = "";
-    private String broadcast = "";
-    @SerializedName("opening_themes")
-    private List<String> opening = Collections.emptyList();
-    @SerializedName("ending_Themes")
-    private List<String> ending = Collections.emptyList();
+    @SerializedName("mal_id") public int id;
+    public String url;
 
-    public int getId() {
-        return id;
-    }
+    public MediaTypes images;
 
-    public String getUrl() {
-        return url;
-    }
+    public String title;
+    @SerializedName("title_synonyms") public List<String> titleSynonyms;
 
-    public String getImage() {
-        return image;
-    }
+    public String synopsis;
+    public String background;
 
-    public String getTitle() {
-        return title;
-    }
+    public String type;
+    public String source;
 
-    public boolean isAiring() {
-        return airing;
-    }
+    public String duration;
+    public boolean airing;
+    public Timestamps aired;
+    public String status;
 
-    public String getSynopsis() {
-        return synopsis;
-    }
+    public int episodes;
 
-    public String getType() {
-        return type;
-    }
+    public double score;
+    @SerializedName("scored_by") public int scoredBy;
+    public int rank;
+    public int popularity;
+    public int members;
+    public int favorites;
 
-    public int getEpisodes() {
-        return episodes;
-    }
+    public String rating;
 
-    public int getRank() {
-        return rank;
-    }
+    public List<Nameable> genres;
+    public List<Nameable> producers;
+    public List<Nameable> studios;
+    public List<Nameable> themes;
 
-    public double getScore() {
-        return score;
-    }
-
-    public Dates getAired() {
-        return aired;
-    }
-
-    public int getMembers() {
-        return members;
-    }
-
-    public int getScored() {
-        return scored;
-    }
-
-    public int getPopularity() {
-        return popularity;
-    }
-
-    public int getFavorites() {
-        return favorites;
-    }
-
-    public List<Nameable> getGenres() {
-        return genres;
-    }
-
-    public String getPremiered() {
-        return premiered;
-    }
-
-    public String getBackground() {
-        return background;
-    }
-
-    public List<Nameable> getProducers() {
-        return producers;
-    }
-
-    public List<Nameable> getLicensors() {
-        return licensors;
-    }
-
-    public List<Nameable> getStudios() {
-        return studios;
-    }
-
-    public String getRating() {
-        return rating;
-    }
-
-    public String getDuration() {
-        return duration;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public String getSource() {
-        return source;
-    }
-
-    public String getBroadcast() {
-        return broadcast;
-    }
-
-    public List<String> getOpening() {
-        return opening;
-    }
-
-    public List<String> getEnding() {
-        return ending;
-    }
-
+    public String rated;
 }
