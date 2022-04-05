@@ -19,6 +19,7 @@ public class PaginatedTest {
     @Order(1)
     @DisplayName("Anime Search Results Pagination Testing")
     public void testAnimeSearch() {
+        Jaikan.setConfiguration(JaikanConfigurationBuilder::build);
         PaginatedResponse<Anime> animes = Jaikan.paginated(Endpoints.SEARCH, Anime.class, "anime", "Yuru").join();
 
         assertNotNull(animes.pagination);
