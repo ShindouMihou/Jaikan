@@ -2,6 +2,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import pw.mihou.jaikan.Jaikan;
+import pw.mihou.jaikan.configuration.JaikanConfigurationBuilder;
 import pw.mihou.jaikan.endpoints.Endpoints;
 import pw.mihou.jaikan.models.Anime;
 import pw.mihou.jaikan.models.Manga;
@@ -16,7 +17,8 @@ public class SearchTest {
     @Order(1)
     @DisplayName("Anime Search Results Testing")
     public void testAnimeSearch() {
-        List<Anime> animes = Jaikan.search(Endpoints.SEARCH, Anime.class, "anime", "Yuru");
+        Jaikan.setConfiguration(JaikanConfigurationBuilder::build);
+        List<Anime> animes = Jaikan.list(Endpoints.SEARCH, Anime.class, "anime", "Yuru").join();
 
         assertFalse(animes.isEmpty());
         assertNotNull(animes.get(0));
@@ -31,7 +33,8 @@ public class SearchTest {
     @Order(2)
     @DisplayName("Manga Search Results Testing")
     public void testMangaSearch() {
-        List<Manga> mangas = Jaikan.search(Endpoints.SEARCH, Manga.class, "manga", "Villainess");
+        Jaikan.setConfiguration(JaikanConfigurationBuilder::build);
+        List<Manga> mangas = Jaikan.list(Endpoints.SEARCH, Manga.class, "manga", "Villainess").join();
 
         assertFalse(mangas.isEmpty());
         assertNotNull(mangas.get(0));

@@ -1,11 +1,9 @@
 package pw.mihou.jaikan.configuration;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import okhttp3.OkHttpClient;
+import pw.mihou.jaikan.cache.RequestCache;
 
 import java.time.Duration;
-import java.util.function.Function;
 
 public interface JaikanConfigurationBuilder {
 
@@ -20,14 +18,13 @@ public interface JaikanConfigurationBuilder {
     JaikanConfigurationBuilder setOkHTTPClient(OkHttpClient client);
 
     /**
-     * Sets the {@link Caffeine} cache specification that Jaikan will use to cache the requests from
-     * Jikan, lowering the requests and speeding up each query. You can set the expiration times, eviction method
-     * and similar here.
+     * Sets the cache specification that Jaikan will use to cache the requests from
+     * Jikan, lowering the requests and speeding up each query.
      *
      * @param cache The cache to use for Jaikan.
      * @return {@link JaikanConfigurationBuilder} for chain-calling methods.
      */
-    JaikanConfigurationBuilder setRequestCache(Function<Caffeine<Object, Object>, Caffeine<Object, Object>> cache);
+    JaikanConfigurationBuilder setRequestCache(RequestCache cache);
 
     /**
      * Sets the rate of requests that should be fired for each second. This is a per-milliseconds basis which means whatever

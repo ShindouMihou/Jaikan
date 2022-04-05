@@ -2,6 +2,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import pw.mihou.jaikan.Jaikan;
+import pw.mihou.jaikan.configuration.JaikanConfigurationBuilder;
 import pw.mihou.jaikan.endpoints.Endpoints;
 import pw.mihou.jaikan.models.Anime;
 import pw.mihou.jaikan.models.Manga;
@@ -14,7 +15,8 @@ public class ByIdTest {
     @Order(1)
     @DisplayName("Anime Get By Id Testing")
     public void testAnimeGetById() {
-        Anime anime = Jaikan.as(Endpoints.OBJECT, Anime.class, "anime", "33106");
+        Jaikan.setConfiguration(JaikanConfigurationBuilder::build);
+        Anime anime = Jaikan.object(Endpoints.OBJECT, Anime.class, "anime", "33106").join();
         assertNotNull(anime);
         assertNotNull(anime.title);
         assertNotNull(anime.url);
@@ -32,7 +34,8 @@ public class ByIdTest {
     @Order(2)
     @DisplayName("Manga Get By Id Testing")
     public void testMangaGetById() {
-        Manga manga = Jaikan.as(Endpoints.OBJECT, Manga.class, "manga", "144441");
+        Jaikan.setConfiguration(JaikanConfigurationBuilder::build);
+        Manga manga = Jaikan.object(Endpoints.OBJECT, Manga.class, "manga", "144441").join();
         assertNotNull(manga);
         assertNotNull(manga.title);
         assertNotNull(manga.url);

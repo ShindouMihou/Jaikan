@@ -1,7 +1,7 @@
 package pw.mihou.jaikan.configuration;
 
-import com.github.benmanes.caffeine.cache.Cache;
 import okhttp3.OkHttpClient;
+import pw.mihou.jaikan.cache.implementation.RequestCacheImplementation;
 import pw.mihou.jaikan.configuration.implementation.JaikanConfigurationBuilderImpl;
 
 import java.time.Duration;
@@ -9,13 +9,13 @@ import java.time.Duration;
 public class JaikanConfiguration {
 
     private final OkHttpClient client;
-    private final Cache<String, String> requestCache;
+    private final RequestCacheImplementation requestCache;
     private final Duration rateDuration;
     private final String userAgent;
 
     public JaikanConfiguration(JaikanConfigurationBuilderImpl builder) {
         this.client = builder.getClient();
-        this.requestCache = builder.getRequestCache();
+        this.requestCache = new RequestCacheImplementation(builder.getRequestCache());
         this.rateDuration = builder.getRateDuration();
         this.userAgent = builder.getUserAgent();
     }
@@ -31,12 +31,11 @@ public class JaikanConfiguration {
     }
 
     /**
-     * The request cache to use for Jaikan, you can build this through {@link com.github.benmanes.caffeine.cache.Caffeine} which is
-     * a static class containing static methods for building your own Caffeine cache.
+     * The request cache to use for Jaikan.
      *
      * @return The configuration's cache.
      */
-    public Cache<String, String> getRequestCache() {
+    public RequestCacheImplementation getRequestCache() {
         return requestCache;
     }
 

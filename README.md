@@ -14,15 +14,42 @@ Jaikan.setConfiguration(builder -> builder
         .setOkHTTPClient(new OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS).build())
         .setUserAgent("Jaikan 4 (by Mihou)")
         .setRatelimit(5, TimeUnit.SECONDS)
-        .setRequestCache(caffeine -> caffeine.expireAfterWrite(Duration.ofHours(6)))
+        .setRequestCache(...)
         .build());
 ```
 
 ## 📦 Are all results cached?
-Yes, all results are cached with the help of [Caffeine](https://github.com/ben-manes/caffeine) which is one of the best
-caching libraries I have used. This both helps reduce the requests you make towards Jikan but also speeds up all your repeated requests.
-By default, all items are cached up to 6 hours before they are evicted from the cache, you can configure this time via the `.setConfiguration(...)` 
-static method of `Jaikan`.
+Jaikan v2.1 has disabled default caching to enable support for Android development. If you want to intercept the requests with caching using, for instance Redis, then 
+you can simply add a RequestCache implementation on the JaikanConfiguration.
+
+<details>
+    <summary>Jedis-based Request Cache</summary>
+
+```java
+public class JedisCache extends RequestCache {
+
+    JedisPool pool = new JedisPool(new JedisPoolConfig(), "localhost");
+
+    @Override
+    public String get(String key) {
+        try (Jedis jedis = pool.getResource()) {
+            return jedis.get(key);
+        }
+    }
+
+    @Override
+    public void put(String key, String value, long timeInSeconds) {
+        try (Jedis jedis = pool.getResource()) {
+            jedis.setex(key, timeInSecodns, value);
+        }
+    }
+    
+}
+```
+```java
+Jaikan.setConfiguration(builder -> builder.setRequestCache(new JedisCache()).build());
+```
+</details>
 
 ## 🌡 Supported Jikan Versions
 Here is a table that shows which API version is supported starting from which version of Jaikan.
@@ -31,7 +58,14 @@ Here is a table that shows which API version is supported starting from which ve
 |         v3        	|            v1.0.0+            	|
 |         v4        	|            v1.0.5+            	|
 
-> Jaikan v3 is now dropped from v2.0.0 onwards to keep consistent with what Jikan will be doing in teh future.
+> Jaikan v3 is now dropped from v2.0.0 onwards to keep consistent with what Jikan will be doing in the future.
+
+> Jaikan v3.1 deprecated the synchronous requests in favor of asynchronous requests, although there are no plans to remove 
+> the synchronous methods as of this moment but we recommend using the asynchronous as soon as possible. You can read more 
+> about how the asynchronous methods look on **🖨️ How do you make a request?**
+
+> Jaikan v3.1 also dropped the default Caffeine cache to support Android development but you can still enforce a custom cache 
+> instead which would be better for flexibility. You can check the example of a custom Jedis-based cache on **📦 Are all results cached?**
 
 ## 💻 How to install?
 To install via Maven:
@@ -46,7 +80,7 @@ To install via Maven:
 <dependency>
   <groupId>pw.mihou</groupId>
   <artifactId>Jaikan</artifactId>
-  <version>v2.0.0</version>
+  <version>v2.1.0</version>
 </dependency>
 ```
 
@@ -59,7 +93,7 @@ allprojects {
 	}
 }
 
-implementation 'pw.mihou:Jaikan:v2.0.0'
+implementation 'pw.mihou:Jaikan:v2.1.0'
 ```
 
 Other Build Tools, please check out the Maven Repository at [Jitpack](https://jitpack.io/#pw.mihou/Jaikan/)
@@ -69,18 +103,31 @@ Other Build Tools, please check out the Maven Repository at [Jitpack](https://ji
 ### Making a request to Jikan
 A simple anime search and transformation looks like this:
 ```java
-Jaikan.search(Endpoints.SEARCH, AnimeResult.class, "anime", "Yuru Yuri").stream().limit(5).forEach(animeResult -> {
-               Anime anime = animeResult.asAnime();
-               System.out.println("Title: " + animeResult.getTitle());
-               System.out.println("\nSynopsis: " + anime.getSynopsis());
-               System.out.println("\n\n");
+Jaikan.list(Endpoints.SEARCH, AnimeResult.class, "anime", "Yuru Yuri").thenAccept(list -> list.stream().limit(5).forEach(animeResult -> {
+    Anime anime = animeResult.asAnime();
+    System.out.println("Title: " + animeResult.getTitle());
+    System.out.println("\nSynopsis: " + anime.getSynopsis());
+    System.out.println("\n\n");
+}));
+```
+
+You can fetch paginated results by replacing the `list(...)` to `paginated(...)`:
+```java
+Jaikan.paginated(Endpoints.SEARCH, AnimeResult.class, "anime", "Yuru Yuri").thenAccept(paginatedResponse -> {
+    System.out.println("Has next page: " + paginatedResponse.pagination.hasNextPage);
+    paginatedResponse.data.stream().limit(5).forEach(animeResult -> {
+        Anime anime = animeResult.asAnime();
+        System.out.println("Title: " + animeResult.getTitle());
+        System.out.println("\nSynopsis: " + anime.getSynopsis());
+        System.out.println("\n\n");
+    });  
 });
 ```
 
 You can also get the Anime immediately if you have the MyAnimeList ID (MAL ID), for example:
 ```java
-Anime anime = Jaikan.as(Endpoints.OBJECT, Anime.class, "anime", 40842);
-System.out.println(anime.getTitle());
+Anime anime = Jaikan.as(Endpoints.OBJECT, Anime.class, "anime", 40842)
+        .thenAccept(anime -> System.out.println(anime.getTitle()));
 ```
 
 ## ❔ Are there any pre-defined endpoints and models?
@@ -122,5 +169,6 @@ We can easily create a model for it that looks like this (This example comes fro
 - [Manga.class](https://github.com/ShindouMihou/Jaikan/blob/master/src/main/java/pw/mihou/jaikan/models/Manga.java)
 
 ## ✈️ How frequently will you update this?
-Jaikan will be updated as soon as my Discord bot encounters an issue with it since it has replaced Schalar's Jikan wrapper on my Discord bot (the reason why I created
-this wrapper in the first place), you don't have to worry about updates as long as I am still active in the developer community which is going to be my future job. >w<
+Jaikan will be updated as frequently as possible to keep up with Jikan, although the update times will be random and based on when my applications somehow 
+encounter an issue while processing the data or similar. Jaikan is created to be as flexible as possible with its model system that allows you to create your own models 
+which makes it easier to fix issues when Jikan changes their format once again.

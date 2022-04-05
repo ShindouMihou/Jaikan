@@ -6,7 +6,7 @@
 
     <groupId>pw.mihou</groupId>
     <artifactId>Jaikan</artifactId>
-    <version>2.0.0</version>
+    <version>2.1.0</version>
     <name>Jaikan</name>
     <description>A generic Java wrapper for Jaikan that aims to be as simple and lightweight to use.</description>
     <url>https://github.com/ShindouMihou/Jaikan/</url>
@@ -79,11 +79,6 @@
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20211205</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.ben-manes.caffeine</groupId>
-            <artifactId>caffeine</artifactId>
-            <version>3.0.6</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

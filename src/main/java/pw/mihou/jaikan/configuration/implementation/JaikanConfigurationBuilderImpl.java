@@ -1,14 +1,12 @@
 package pw.mihou.jaikan.configuration.implementation;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import okhttp3.OkHttpClient;
+import pw.mihou.jaikan.cache.RequestCache;
 import pw.mihou.jaikan.configuration.JaikanConfiguration;
 import pw.mihou.jaikan.configuration.JaikanConfigurationBuilder;
 
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
 public class JaikanConfigurationBuilderImpl implements JaikanConfigurationBuilder{
 
@@ -16,11 +14,9 @@ public class JaikanConfigurationBuilderImpl implements JaikanConfigurationBuilde
             .connectTimeout(5, TimeUnit.SECONDS)
             .build();
 
-    private Cache<String, String> requestCache = Caffeine.newBuilder()
-            .expireAfterWrite(Duration.ofHours(6))
-            .build();
+    private RequestCache requestCache;
 
-    private Duration rateDuration = Duration.ofMillis(2000);
+    private Duration rateDuration = Duration.ofMillis(562);
 
     private String userAgent = "Jaikan (Java 1.8/https://github.com/ShindouMihou/Jaikan)";
 
@@ -31,8 +27,8 @@ public class JaikanConfigurationBuilderImpl implements JaikanConfigurationBuilde
     }
 
     @Override
-    public JaikanConfigurationBuilder setRequestCache(Function<Caffeine<Object, Object>, Caffeine<Object, Object>> cache) {
-        this.requestCache = cache.apply(Caffeine.newBuilder()).build();
+    public JaikanConfigurationBuilder setRequestCache(RequestCache cache) {
+        this.requestCache = cache;
         return this;
     }
 
@@ -60,7 +56,7 @@ public class JaikanConfigurationBuilderImpl implements JaikanConfigurationBuilde
         return client;
     }
 
-    public Cache<String, String> getRequestCache() {
+    public RequestCache getRequestCache() {
         return requestCache;
     }
 
