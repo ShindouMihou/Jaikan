@@ -58,13 +58,13 @@ Here is a table that shows which API version is supported starting from which ve
 |         v3        	|            v1.0.0+            	|
 |         v4        	|            v1.0.5+            	|
 
-> Jaikan v3 is now dropped from v2.0.0 onwards to keep consistent with what Jikan will be doing in the future.
+> Jikan v3 is now dropped from v2.0.0 onwards to keep consistent with what Jikan will be doing in the future.
 
-> Jaikan v3.1 deprecated the synchronous requests in favor of asynchronous requests, although there are no plans to remove 
+> Jaikan v2.1 deprecated the synchronous requests in favor of asynchronous requests, although there are no plans to remove 
 > the synchronous methods as of this moment but we recommend using the asynchronous as soon as possible. You can read more 
 > about how the asynchronous methods look on **🖨️ How do you make a request?**
 
-> Jaikan v3.1 also dropped the default Caffeine cache to support Android development but you can still enforce a custom cache 
+> Jaikan v2.1 also dropped the default Caffeine cache to support Android development but you can still enforce a custom cache 
 > instead which would be better for flexibility. You can check the example of a custom Jedis-based cache on **📦 Are all results cached?**
 
 ## 💻 How to install?
